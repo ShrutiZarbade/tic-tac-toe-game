@@ -18,6 +18,17 @@ function display_board()
    echo "| ${board[4]} | ${board[5]} | ${board[6]} |"
    echo "| ${board[7]} | ${board[8]} | ${board[9]} |"
 }
+
+function assignSymbol()
+{
+	if (( $((RANDOM%2))==1 ))
+	then
+		symbol='X'
+	else
+		symbol='O'
+	fi
+	echo symbol is $symbol
+}
 resetboard
 display_board
-
+assignSymbol
