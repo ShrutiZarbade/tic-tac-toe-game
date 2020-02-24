@@ -1,18 +1,19 @@
+#!/bin/bash -x
+
 echo "Welcome to Tic-Tac-Toe Game"
 
 declare -a board
-total_cell=9
+
+TOTAL_CELL=9
 
 cell=0
-letter="O"
 flag=0
-flag1=0
 
 function resetBoard()
 {
-	for((i=1;i<=$total_cell;i++))
+	for((i=1;i<=9;i++))
 	do
-	board[i]=$i
+   	board[i]=$i
 	done
 }
 
@@ -28,43 +29,43 @@ function whoPlayFirst()
 	if (( $((RANDOM%2))==1 ))
 	then
 		player="User"
-		assignLetter
+		userLetter="X"
+		computerLetter="O"
 		userTurn
 	else
 		player="Computer"
-		assignLetter
+		userLetter="O"
+		computerLetter="X"
 		computerTurn
-	fi
-}
-
-function assignLetter()
-{
-	if [ $letter == "X" ]
-	then
-		letter="O"
-	else
-		letter="X"
 	fi
 }
 
 function switchTurn()
 {
-	assignLetter
-	if [ $player == "User" ]
+	while (( cell<TOTAL_CELL ))
+	do
+		if [ $player == "User" ]
+		then
+			player="Computer"
+			computerTurn
+		else
+			player="User"
+			userTurn
+		fi
+	done
+
+	if (( cell == TOTAL_CELL ))
 	then
-		player="Computer"
-		computerTurn
-	else
-		player="User"
-		userTurn
+		echo "Game Tie"
+		exit
 	fi
 }
 
 function userTurn()
 {
-	echo "$player Turn"
+	echo "$player"
 	read -p "Enter Cell Number: " cellNumber
-	checkEmptyCell
+	checkEmptyCell $cellNumber
 	if (( flag==1 ))
 	then
 		userTurn
@@ -74,129 +75,105 @@ function userTurn()
 function computerTurn()
 {
 	echo "$player"
-	checkSelfWin
+	checkSelfWin $computerLetter
+	checkSelfWin $userLetter
+	cellNumber=$((RANDOM%9+1))
+	echo "random position entered by computer is : $cellNumber"
+	checkEmptyCell $cellNumber
 	if (( flag==1 ))
 	then
 		computerTurn
 	fi
 }
-function checkSelfWin()
-{
+
+function checkSelfWin(){
 	j=0
 	for((i=1;i<=3;i++))
 	do
-		if [[ ${board[i+j]} == $letter && ${board[i+j+1]} == $letter ]]
+		if [[ ${board[i+j]} == $1 && ${board[i+j+1]} == $1 ]]
 		then
-			cellNumber=$((i+j+2))
-			checkEmptyCell
-			break
-		elif [[ ${board[i+j]} == $letter && ${board[i+j+2]} == $letter ]]
+			checkEmptyCell $((i+j+2))
+		elif [[ ${board[i+j]} == $1 && ${board[i+j+2]} == $1 ]]
 		then
-			cellNumber=$((i+j+1))
-			checkEmptyCell
-			break
-		elif [[ ${board[i+j+1]} == $letter && ${board[i+j+2]} == $letter ]]
+			checkEmptyCell $((i+j+1))
+		elif [[ ${board[i+j+1]} == $1 && ${board[i+j+2]} == $1 ]]
 		then
-			cellNumber=$((i+j))
-			checkEmptyCell
-			break
-		elif [[ ${board[i]} == $letter && ${board[i+3]} == $letter ]]
+			checkEmptyCell $((i+j))
+		fi
+		if [[ ${board[i]} == $1 && ${board[i+3]} == $1 ]]
 		then
-			cellNumber=$((i+6))
-			checkEmptyCell
-			break
-		elif [[ ${board[i]} == $letter && ${board[i+6]} == $letter ]]
+			checkEmptyCell $((i+6))
+		elif [[ ${board[i]} == $1 && ${board[i+6]} == $1 ]]
 		then
-			cellNumber=$((i+3))
-			checkEmptyCell
-			break
-		elif [[ ${board[i+3]} == $letter && ${board[i+6]} == $letter ]]
+			checkEmptyCell $((i+3))
+		elif [[ ${board[i+3]} == $1 && ${board[i+6]} == $1 ]]
 		then
-			cellNumber=$i
-			checkEmptyCell
-			break
+			checkEmptyCell $i
 		fi
 		j=$((j+2))
 	done
-	checkForWin
-	checkSelfWinDiagonal
+	checkSelfWinDiagonal $1
 }
 
 function checkSelfWinDiagonal(){
-	if [[ ${board[1]} == $letter && ${board[5]} == $letter ]]
+	if [[ ${board[1]} == $1 && ${board[5]} == $1 ]]
 	then
-		cellNumber=9
-		checkEmptyCell
-	elif [[ ${board[3]} == $letter && ${board[5]} == $letter ]]
+		checkEmptyCell 9
+	elif [[ ${board[3]} == $1 && ${board[5]} == $1 ]]
 	then
-		cellNumber=7
-		checkEmptyCell
-	elif [[ ${board[1]} == $letter && ${board[9]} == $letter ]]
+		checkEmptyCell 7
+	elif [[ ${board[1]} == $1 && ${board[9]} == $1 ]]
 	then
-		cellNumber=5
-		checkEmptyCell
-	elif [[ ${board[3]} == $letter && ${board[7]} == $letter ]]
+		checkEmptyCell 5
+	fi
+	if [[ ${board[3]} == $1 && ${board[7]} == $1 ]]
 	then
-		cellNumber=5
-		checkEmptyCell
-	elif [[ ${board[5]} == $letter && ${board[9]} == $letter ]]
+		checkEmptyCell 5
+	elif [[ ${board[5]} == $1 && ${board[9]} == $1 ]]
 	then
-		cellNumber=1
-		checkEmptyCell
-	elif [[ ${board[7]} == $letter && ${board[5]} == $letter ]]
+		checkEmptyCell 1
+	elif [[ ${board[7]} == $1 && ${board[5]} == $1 ]]
 	then
-		cellNumber=3
-		checkEmptyCell
-	else
-		cellNumber=$((RANDOM%9+1))
-		echo "random position entered by computer is : $cellNumber"
-		checkEmptyCell
+		checkEmptyCell 3
 	fi
 }
 
-function checkEmptyCell()
-{
+function checkEmptyCell(){
+	cellNumber=$1
 	if [[ ${board[cellNumber]} -ne $cellNumber ]]
 	then
-		echo "Cell is not Empty."
 		flag=1
 	else
 		flag=0
-		board[cellNumber]=$letter
+		if [ $player == "User" ]
+		then
+			board[cellNumber]=$userLetter
+		else
+			board[cellNumber]=$computerLetter
+		fi
 		displayBoard
-	((cell++))
+		((cell++))
+		checkForWin
+		switchTurn
 	fi
 }
 
-function checkForWin()
-{
+function checkForWin(){
 	j=0
 	for((i=1;i<=3;i++))
 	do
 		if [[ ( ${board[i+j]} == ${board[i+j+1]} && ${board[i+j+1]} == ${board[i+j+2]} ) ||
-				( ${board[i]} == ${board[i+3]} && ${board[i+3]} == ${board[i+6]} ) ||
-				( ${board[1]} == ${board[5]} && ${board[5]} == ${board[9]} ) ||
-				( ${board[3]} == ${board[5]} && ${board[5]} == ${board[7]} ) ]]
-	then
-		echo "$player Won"
-		exit
-	fi
-	j=$((j+2))
+			( ${board[i]} == ${board[i+3]} && ${board[i+3]} == ${board[i+6]} ) ||
+			( ${board[1]} == ${board[5]} && ${board[5]} == ${board[9]} ) ||
+			( ${board[3]} == ${board[5]} && ${board[5]} == ${board[7]} ) ]]
+		then
+			echo "$player Won"
+			exit
+		fi
+		j=$((j+2))
 	done
 }
 
 resetBoard
 displayBoard
 whoPlayFirst
-
-while (( cell<total_cell ))
-do
-	checkForWin
-	switchTurn
-done
-
-if (( cell == total_cell ))
-then
-	checkForWin
-	echo "Game Tie"
-fi
