@@ -53,11 +53,10 @@ function switchTurn()
 			userTurn
 		fi
 	done
-
 	if (( cell == TOTAL_CELL ))
 	then
 		echo "Game Tie"
-		exit
+	exit
 	fi
 }
 
@@ -77,6 +76,7 @@ function computerTurn()
 	echo "$player"
 	checkSelfWin $computerLetter
 	checkSelfWin $userLetter
+	checkForCorner
 	cellNumber=$((RANDOM%9+1))
 	echo "random position entered by computer is : $cellNumber"
 	checkEmptyCell $cellNumber
@@ -86,7 +86,19 @@ function computerTurn()
 	fi
 }
 
-function checkSelfWin(){
+function checkForCorner()
+{
+	for((i=1;i<=9;i=i+2))
+	do
+		if (( i!=5 ))
+		then
+			checkEmptyCell $i
+		fi
+	done
+}
+
+function checkSelfWin()
+{
 	j=0
 	for((i=1;i<=3;i++))
 	do
@@ -115,7 +127,8 @@ function checkSelfWin(){
 	checkSelfWinDiagonal $1
 }
 
-function checkSelfWinDiagonal(){
+function checkSelfWinDiagonal()
+{
 	if [[ ${board[1]} == $1 && ${board[5]} == $1 ]]
 	then
 		checkEmptyCell 9
@@ -138,7 +151,8 @@ function checkSelfWinDiagonal(){
 	fi
 }
 
-function checkEmptyCell(){
+function checkEmptyCell()
+{
 	cellNumber=$1
 	if [[ ${board[cellNumber]} -ne $cellNumber ]]
 	then
@@ -158,7 +172,8 @@ function checkEmptyCell(){
 	fi
 }
 
-function checkForWin(){
+function checkForWin()
+{
 	j=0
 	for((i=1;i<=3;i++))
 	do
@@ -168,7 +183,7 @@ function checkForWin(){
 			( ${board[3]} == ${board[5]} && ${board[5]} == ${board[7]} ) ]]
 		then
 			echo "$player Won"
-			exit
+		exit
 		fi
 		j=$((j+2))
 	done
