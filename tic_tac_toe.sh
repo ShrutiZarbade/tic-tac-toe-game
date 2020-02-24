@@ -1,75 +1,129 @@
-#!/bin/bash -x
+echo "Welcome to Tic-Tac-Toe Game"
 
-echo "Welcome to Tic Tac Toe Game"
-
-declare -a board
-
+declare -a boar
 total_cell=9
-count=0
-playerSymbol="O"
 
-function resetboard()
+cell=0
+letter="O"
+flag=0
+
+function resetBoard()
 {
-   for (( i=1; i<=$total_cell; i++ ))
-   do
-      board[$i]=""
-   done
+	for((i=1;i<=$total_cell;i++))
+	do
+	board[i]=$i
+	done
 }
 
-function display_board()
+function displayBoard()
 {
-   echo "| ${board[1]} | ${board[2]} | ${board[3]} |"
-   echo "| ${board[4]} | ${board[5]} | ${board[6]} |"
-   echo "| ${board[7]} | ${board[8]} | ${board[9]} |"
+	echo "| ${board[1]} | ${board[2]} | ${board[3]} |"
+	echo "| ${board[4]} | ${board[5]} | ${board[6]} |"
+	echo "| ${board[7]} | ${board[8]} | ${board[9]} |"
 }
 
-function toss()
+function whoPlayFirst()
 {
 	if (( $((RANDOM%2))==1 ))
 	then
-		playerSymbol="X"
+		player="User"
+		assignLetter
+		userTurn
 	else
-		playerSymbol="O"
+		player="Computer"
+		assignLetter
+		computerTurn
 	fi
-	echo symbol is $playerSymbol
 }
 
-function checkEmpty()
+function assignLetter()
 {
-	read -p "Enter cell Number: " cellnumber
-	if [[ "${board[cellnumber]} -ne $cellnumber" ]]
+	if [ $letter == "X" ]
 	then
-		echo "Cell is not empty"
+		letter="O"
 	else
-		echo "cell is empty"
-		board[cellnumber]=$playerSymbol
-	((count++))
+		letter="X"
 	fi
-	display_board
 }
 
-function checkToWin()
+function switchTurn()
 {
-	for(( i=1; i<=3; i++ ))
+	assignLetter
+	if [ $player == "User" ]
+	then
+		player="Computer"
+		computerTurn
+	else
+		player="User"
+		userTurn
+	fi
+}
+
+function userTurn()
+{
+	echo "$player Turn"
+	read -p "Enter Cell Number: " cellNumber
+	checkEmptyCell
+	if (( flag==1 ))
+	then
+		userTurn
+	fi
+}
+
+function computerTurn()
+{
+	echo "$player Turn"
+	cellNumber=$((RANDOM%9 + 1))
+	echo "random number of Computer:$cellNumber"
+	checkEmptyCell
+	if (( flag==1 ))
+	then
+		computerTurn
+	fi
+}
+
+function checkEmptyCell()
+{
+	if [[ ${board[cellNumber]} -ne $cellNumber ]]
+	then
+		echo "Cell is not Empty."
+		flag=1
+	else
+		flag=0
+		board[cellNumber]=$letter
+		displayBoard
+	((cell++))
+	fi
+}
+
+function checkForWin()
+{
+	j=0
+	for((i=1;i<=3;i++))
 	do
-		j=0
-		if [[ ( ${board[i]} == {${board[i+j+1]} && ${board[i+j+1]} == ${board[i+j+2]} ||
-				  ${board[i]} == {${board[i+3]} && ${board[i+3]} == ${board[i+6]} ||
-				  ${board[1]} == {${board[5]} && ${board[5]} == ${board[9]} ||
-				  ${board[3]} == {${board[5]} && ${board[5]} == ${board[7]} ) ]]
-		then
-			echo "player won"
-			exit
-		fi
-		j=$((j+2))
+		if [[ ( ${board[i+j]} == ${board[i+j+1]} && ${board[i+j+1]} == ${board[i+j+2]} ) ||
+				( ${board[i]} == ${board[i+3]} && ${board[i+3]} == ${board[i+6]} ) ||
+				( ${board[1]} == ${board[5]} && ${board[5]} == ${board[9]} ) ||
+				( ${board[3]} == ${board[5]} && ${board[5]} == ${board[7]} ) ]]
+	then
+		echo "$player Won"
+		exit
+	fi
+	j=$((j+2))
 	done
 }
-resetboard
-display_board
-toss
 
-while (( count<9 ))
+resetBoard
+displayBoard
+whoPlayFirst
+
+while (( cell<total_cell ))
 do
-		checkEmpty
-		checkToWin
+	checkForWin
+	switchTurn
 done
+
+if (( cell == total_cell ))
+then
+	echo "Game Tie"
+fi
