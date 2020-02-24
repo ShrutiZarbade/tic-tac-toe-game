@@ -96,6 +96,10 @@ function checkForCorner()
 		fi
 	done
 }
+function checkForCentre()
+{
+	checkEmptycell $((TOTAL_CELL/2 + 1))
+}
 
 function checkSelfWin()
 {
