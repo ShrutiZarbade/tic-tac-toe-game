@@ -29,6 +29,17 @@ function toss()
 	fi
 	echo symbol is $playerSymbol
 }
-resetboard
-display_board
-toss
+
+function checkEmpty()
+{
+	read -p "Enter cell Number: " cellnumber
+	if [ "${board[$cellnumber]}" == " " ]
+	then
+		echo "Cell is empty"
+		board[$cellnumber]=$playerSymbol
+	else
+		echo "cell is not empty"
+	fi
+}
+
+
