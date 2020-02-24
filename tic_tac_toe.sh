@@ -96,9 +96,18 @@ function checkForCorner()
 		fi
 	done
 }
+
 function checkForCentre()
 {
 	checkEmptycell $((TOTAL_CELL/2 + 1))
+}
+
+function checkForSides()
+{
+	for(( i=2;i<=8;i=i+2))
+	do
+		checkEmptyCell $i
+	done
 }
 
 function checkSelfWin()
