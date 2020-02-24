@@ -19,16 +19,16 @@ function display_board()
    echo "| ${board[7]} | ${board[8]} | ${board[9]} |"
 }
 
-function assignSymbol()
+function toss()
 {
 	if (( $((RANDOM%2))==1 ))
 	then
-		symbol='X'
+		playerSymbol="X"
 	else
-		symbol='O'
+		playerSymbol="O"
 	fi
-	echo symbol is $symbol
+	echo symbol is $playerSymbol
 }
 resetboard
 display_board
-assignSymbol
+toss
