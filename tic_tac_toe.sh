@@ -2,8 +2,12 @@
 
 echo "Welcome to Tic Tac Toe Game"
 
-declare -A board
+declare -a board
+
 total_cell=9
+count=0
+playerSymbol="O"
+
 function resetboard()
 {
    for (( i=1; i<=$total_cell; i++ ))
@@ -33,13 +37,39 @@ function toss()
 function checkEmpty()
 {
 	read -p "Enter cell Number: " cellnumber
-	if [ "${board[$cellnumber]}" == " " ]
+	if [[ "${board[cellnumber]} -ne $cellnumber" ]]
 	then
-		echo "Cell is empty"
-		board[$cellnumber]=$playerSymbol
+		echo "Cell is not empty"
 	else
-		echo "cell is not empty"
+		echo "cell is empty"
+		board[cellnumber]=$playerSymbol
+	((count++))
 	fi
+	display_board
 }
 
+function checkToWin()
+{
+	for(( i=1; i<=3; i++ ))
+	do
+		j=0
+		if [[ ( ${board[i]} == {${board[i+j+1]} && ${board[i+j+1]} == ${board[i+j+2]} ||
+				  ${board[i]} == {${board[i+3]} && ${board[i+3]} == ${board[i+6]} ||
+				  ${board[1]} == {${board[5]} && ${board[5]} == ${board[9]} ||
+				  ${board[3]} == {${board[5]} && ${board[5]} == ${board[7]} ) ]]
+		then
+			echo "player won"
+			exit
+		fi
+		j=$((j+2))
+	done
+}
+resetboard
+display_board
+toss
 
+while (( count<9 ))
+do
+		checkEmpty
+		checkToWin
+done
